@@ -243,6 +243,9 @@ pub enum SignedTransaction {
     /// Signed EIP-4844 transaction.
     #[serde(rename = "0x3")]
     Eip4844(SignedEip4844Transaction),
+
+    #[serde(rename = "0x7e")]
+    BlastTransaction(SignedBlastDepositTransaction),
 }
 
 impl SignedTransaction {
@@ -252,6 +255,7 @@ impl SignedTransaction {
             SignedTransaction::Eip2930(tx) => tx.nonce,
             SignedTransaction::Eip1559(tx) => tx.nonce,
             SignedTransaction::Eip4844(tx) => tx.nonce,
+            SignedTransaction::BlastTransaction(tx) => tx.nonce,
         }
     }
 
@@ -261,6 +265,7 @@ impl SignedTransaction {
             SignedTransaction::Eip2930(tx) => tx.to,
             SignedTransaction::Eip1559(tx) => tx.to,
             SignedTransaction::Eip4844(tx) => tx.to,
+            SignedTransaction::BlastTransaction(tx) => tx.to,
         }
     }
 
@@ -270,6 +275,7 @@ impl SignedTransaction {
             SignedTransaction::Eip2930(tx) => tx.from,
             SignedTransaction::Eip1559(tx) => tx.from,
             SignedTransaction::Eip4844(tx) => tx.from,
+            SignedTransaction::BlastTransaction(tx) => tx.from,
         }
     }
 
@@ -279,6 +285,7 @@ impl SignedTransaction {
             SignedTransaction::Eip2930(tx) => tx.gas,
             SignedTransaction::Eip1559(tx) => tx.gas,
             SignedTransaction::Eip4844(tx) => tx.gas,
+            SignedTransaction::BlastTransaction(tx) => tx.gas,
         }
     }
 
@@ -288,6 +295,7 @@ impl SignedTransaction {
             SignedTransaction::Eip2930(tx) => tx.value,
             SignedTransaction::Eip1559(tx) => tx.value,
             SignedTransaction::Eip4844(tx) => tx.value,
+            SignedTransaction::BlastTransaction(tx) => tx.value,
         }
     }
 
@@ -297,6 +305,7 @@ impl SignedTransaction {
             SignedTransaction::Eip2930(tx) => tx.transaction_index,
             SignedTransaction::Eip1559(tx) => tx.transaction_index,
             SignedTransaction::Eip4844(tx) => tx.transaction_index,
+            SignedTransaction::BlastTransaction(tx) => tx.transaction_index,
         }
     }
 
@@ -306,6 +315,7 @@ impl SignedTransaction {
             SignedTransaction::Eip2930(tx) => tx.input.clone(),
             SignedTransaction::Eip1559(tx) => tx.input.clone(),
             SignedTransaction::Eip4844(tx) => tx.input.clone(),
+            SignedTransaction::BlastTransaction(tx) => tx.input.clone(),
         }
     }
 
@@ -315,6 +325,7 @@ impl SignedTransaction {
             SignedTransaction::Eip2930(tx) => tx.hash,
             SignedTransaction::Eip1559(tx) => tx.hash,
             SignedTransaction::Eip4844(tx) => tx.hash,
+            SignedTransaction::BlastTransaction(tx) => tx.hash,
         }
     }
 }
@@ -577,6 +588,50 @@ pub struct SignedEip4844Transaction {
     pub r: U256,
     /// S
     pub s: U256,
+}
+// "blockHash": "0x85c9eacbdec86ca6a4d78edf7889d5636bd6f200978436304a74b81b8f5672e8",
+// "blockNumber": "0x3",
+// "from": "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0001",
+// "gas": "0xf4240",
+// "gasPrice": "0x0",
+// "hash": "0x1c916014dddb2f792716645b724f8c11774e45240c950a2d4e60619aca0100f6",
+// "input": "0x015d8eb90000000000000000000000000000000000000000000000000000000001267f060000000000000000000000000000000000000000000000000000000065da5e5700000000000000000000000000000000000000000000000000000005c2822e01fcfb8d586bdae763f1189988789211c69eb893a895e7ba48be3ca6289f0941b70000000000000000000000000000000000000000000000000000000000000003000000000000000000000000415c8893d514f9bc5211d36eeda4183226b84aa700000000000000000000000000000000000000000000000000000000000000bc00000000000000000000000000000000000000000000000000000000000a6fe0",
+// "nonce": "0x2",
+// "to": "0x4200000000000000000000000000000000000015",
+// "transactionIndex": "0x0",
+// "value": "0x0",
+// "type": "0x7e",
+// "v": "0x0",
+// "r": "0x0",
+// "s": "0x0",
+// "sourceHash": "0x7bfb9c90ad6ec1750ea5fdeae04962b1fd301924b058a10569c877f71ee624f6",
+// "mint": "0x0",
+// "depositReceiptVersion": "0x1"
+//
+
+/// Signed Blast Deposti transaction.
+#[derive(Clone, Eq, PartialEq, Deserialize, Serialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct SignedBlastDepositTransaction {
+    // pub block_hash: Digest,
+    // pub block_number: U256,
+    pub from: Address,
+    pub gas: U256,
+    // pub gas_price: U256,
+    pub hash: Digest,
+    #[serde(with = "serialization::bytes")]
+    pub input: Vec<u8>,
+    pub nonce: U256,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub to: Option<Address>,
+    pub transaction_index: U256,
+    pub value: U256,
+    // pub v: U256,
+    // pub r: U256,
+    // pub s: U256,
+    // pub source_hash: Digest,
+    // pub mint: U256,
+    // pub deposit_receipt_version: U256,
 }
 
 impl Debug for SignedEip4844Transaction {
